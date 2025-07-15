@@ -1,1 +1,22 @@
-////
+module mealy_seq_detector #(
+    parameter N = 4,
+    parameter [N-1:0] SEQ = 4'b1011
+)(
+    input clk,
+    input rst,
+    input x,         // Serial input
+    output reg y     // Output goes high when pattern is detected
+);
+
+    reg [N-2:0] shift; // Shift register holds last N-1 bits
+
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            shift <= 0;
+            y <= 0;
+        end else begin
+            shift <= {shift[N-3:0], x};
+            y <= ({shift, x} == SEQ);  // Check if pattern matches
+        end
+    end
+endmodule
